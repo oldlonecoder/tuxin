@@ -30,11 +30,11 @@ book::code terminal::begin()
 {
     if(auto c = terminal::query_size(); !c)
         book::error() << book::code::failed << " to get the screen geometry - there will be no boudaries checks. ";
-    
+
 
     tcgetattr(STDIN_FILENO, &saved_st);
     new_term = saved_st;
-    
+
     new_term.c_iflag &= ~(IGNBRK | BRKINT | PARMRK | ISTRIP | IGNCR | IXON );
     new_term.c_oflag &= ~OPOST;
     new_term.c_cflag |= (CS8);
@@ -47,9 +47,9 @@ book::code terminal::begin()
     tcsetattr(STDIN_FILENO, TCSAFLUSH, &new_term);
 
     switch_alternate();
-    
+
     book::out() << " console set to raw mode...";
-    
+
     ::signal(SIGWINCH, &terminal::resize_signal);
     terminal::cursor_off();
     terminal::start_mouse();
@@ -74,7 +74,7 @@ book::code terminal::query_size()
     if((!win.ws_col)||(!win.ws_row))
         return book::code::notexist;
 
-    terminal::_geometry_ = ui::rectangle{{0,0}, ui::size{static_cast<int>(win.ws_col), static_cast<int>(win.ws_row)}};
+    terminal::_geometry_ = ui::rectangle{{1,1}, ui::size{static_cast<int>(win.ws_col), static_cast<int>(win.ws_row)}};
     book::info() << book::fn::fun << " terminal resize to:" << color::yellow << std::format("{:>3d}x{:<3d}",_geometry_.dwh.w,_geometry_.dwh.h);
     return book::code::done;
 }
@@ -90,7 +90,7 @@ void terminal::resize_signal(int)
 
 /**
  * @brief Activate the screen cursor.
- * 
+ *
  */
 void terminal::cursor_on()
 {
@@ -111,7 +111,7 @@ void terminal::mv(globals::direction::type dir, int d)
 
 /**
  * @brief Deactivate the screen cursor
- * 
+ *
  */
 void terminal::cursor_off()
 {
@@ -119,8 +119,8 @@ void terminal::cursor_off()
 }
 
 /**
- * @brief Saves the screen contents 
- * 
+ * @brief Saves the screen contents
+ *
  */
 void terminal::switch_alternate()
 {

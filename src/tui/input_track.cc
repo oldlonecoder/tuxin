@@ -74,7 +74,7 @@ book::code intrack::setup_ui()
     set_anchor(anchor::fit_right|anchor::fit_bottom);
     _keyevent_painter_ = begin_paint(_key_area_);
     _mouseevent_painter_ = begin_paint(_mouse_area_);
-    apply_placement();
+    emplace();
     return book::code::done;
 }
 

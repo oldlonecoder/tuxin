@@ -125,20 +125,10 @@ public:
     virtual book::code resize(ui::size new_sz);
     virtual book::code parent_resized();
     //virtual book::code move(cxy dxy);
+    virtual book::code emplace();
 protected:
     virtual void dirty(element::painter& _painter);
-    virtual book::code apply_placement();
     virtual void draw_frame(element::painter& paint);
-
-    virtual book::code fit_width();
-    virtual book::code fit_height();
-    virtual book::code fit_to_right();
-    virtual book::code fit_to_left();
-    virtual book::code fit_to_hcenter();
-    virtual book::code fit_to_vcenter();
-    virtual book::code fit_to_center();
-
-
 
 };
 

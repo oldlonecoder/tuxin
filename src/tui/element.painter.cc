@@ -88,7 +88,14 @@ element::painter& element::painter::clear(rectangle _rect)
 element::painter& element::painter::to(const cxy& xy)
 {
     if(!_rect_[_rect_.a+xy])
-        throw book::exception() [ book::except() << book::fn::fun << book::code::oob << color::red4 << xy << color::reset << "."];
+        throw book::exception() [
+            book::except() << book::fn::fun
+                           << book::code::oob
+                           << color::yellow << _parent_->id()
+                           << color::reset << " position request : "
+                           << color::red4 << xy << color::reset << "."
+                           << color::lightcyan3 << _rect_
+            ];
 
     _rect_.goto_xy(xy);
 

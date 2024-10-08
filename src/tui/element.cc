@@ -70,7 +70,7 @@ book::code element::set_anchor(globals::anchor::value av)
     _anchor_ = av;
     ///@todo respond to the (new) _anchor_ value...
     /// ...
-    apply_placement();
+    emplace();
 
 
     return book::code::accepted;
@@ -131,80 +131,129 @@ void element::dirty(element::painter& _painter)
     _windc_.dirty(_painter._rect_);
 }
 
-book::code element::apply_placement()
+book::code element::emplace()
 {
     using namespace globals;
     book::debug() << book::fn::fun << '\'' << color::yellow << id() << color::reset << "\' :";
+    cxy off{0,0};
 
-    // need to separate and simple access to the rectangle coordinates components:
+    // need to separate and set a simple access to the rectangle coordinates and its components:
     auto par = parent<element>();
-    rectangle ar;
+    rectangle area; // The geometry where this element is positionning.
     if(par)
-        ar = parent<element>()->_windc_._rect_.tolocal();
+        area = parent<element>()->_windc_._rect_.tolocal();
     else
-        ar = terminal::geometry();
+        area = terminal::geometry();
 
-    auto [a,b,sz] = ar.components();
-    auto [_a,_b,_sz] = _windc_._rect_.components();
+    if((_anchor_ & anchor::onframe_fit))
+        off={0,0};
+    else
+    {
+        if(par)
+            if(par->_uistyle_ & uistyle::Frame)
+                off={1,1};
+    }
+    book::out() << id() << " offset:" << off;
+    //
+    book::debug() << "placement is in this area :" << color::yellow << area << color::reset;
 
-    if(_anchor_ & anchor::width_fit) fit_width();
-    if(_anchor_ & anchor::height_fit) fit_height();
-    else
+    auto [a,b,sz] = area.components();
+    auto [ea,eb,esz] = _windc_._rect_.components(); // this 'e'lement's geometry components
+
+    if(_anchor_ & anchor::width_fit)
     {
-        if(_anchor_ & anchor::fit_center)
-        {
-            _windc_._rect_.moveat({(sz.w -_sz.w)/2, (sz.h -_sz.h)/2});
-            return book::code::accepted;
-        }
+        resize(ui::size{area.dwh.w - (off.x*2), *geometry().height()});
+        _windc_._rect_.moveat({off.x,0});
+        book::out() << "fit width: " << color::yellow << id() << color::reset <<"::geometry(): " << color::hotpink4 << geometry() << color::reset;
     }
-    if(_anchor_ & anchor::fit_vcenter)
-        _windc_._rect_.moveat({_a.x,(sz.h -_sz.h)/2});
     else
     {
-        if(_anchor_ & anchor::fit_top)
-        {
-            if(((_uistyle_ & uistyle::Frame)&&(_anchor_ & anchor::onframe_fit)) || !(_uistyle_ & uistyle::Frame))
-                _windc_._rect_.moveat(cxy{a.x,0});
-            else
-                _windc_._rect_.moveat(cxy{a.x,1});
-        }
-        else
-        {
-            if(_anchor_ & anchor::fit_bottom)
-            {
-                book::out() << color::yellow << id() << " request fit to bottom of...("<< color::chartreuse6 << ar << color::reset << "):";
-                if(((_uistyle_ & uistyle::Frame)&&(_anchor_ & anchor::onframe_fit)) || !(_uistyle_ & uistyle::Frame))
-                    _windc_._rect_.moveat(cxy{a.x, ar.b.y});
-                else
-                    _windc_._rect_.moveat(cxy{a.x, ar.b.y});
-            }
-        }
-    }
-    if(_anchor_ & anchor::fit_hcenter)
-        _windc_._rect_.moveat({(sz.w - _sz.w)/2, _a.y});
-    else
-    {
-        book::out() << color::yellow << id() << color::reset << " not centered:";
         if(_anchor_ & anchor::fit_right)
         {
             book::out() << color::yellow << id() << color::reset << " fit right:";
-            if(((_uistyle_ & uistyle::Frame)&&(_anchor_ & anchor::onframe_fit)) || !(_uistyle_ & uistyle::Frame))
-                _windc_._rect_.moveat(cxy{b.x - _sz.w, b.y});
-            else
-                _windc_._rect_.moveat(cxy{b.x -_sz.w-1, sz.h});
+            _windc_._rect_.moveat(cxy{b.x - (esz.w + off.x), eb.y});
             book::out() << geometry();
         }
         else
             if(_anchor_ & anchor::fit_left)
             {
-                if(((_uistyle_ & uistyle::Frame)&&(_anchor_ & anchor::onframe_fit)) || !(_uistyle_ & uistyle::Frame))
-                    _windc_._rect_.moveat(cxy{0, _a.y});
-                else
-                    _windc_._rect_.moveat(cxy{1, _a.y});
+                book::out() << color::yellow << id() << color::reset << " fit right:";
+                _windc_._rect_.moveat(cxy{a.x+off.x, eb.y});
+                book::out() << geometry();
             }
+            // else center....
     }
+
+    if(_anchor_ & anchor::height_fit)
+    {
+        resize(ui::size{_windc_._rect_.dwh.w,*area.height()});
+        book::out() << "fit height: " << color::yellow << id() << color::reset <<"::geometry(): " << color::hotpink4 << geometry() << color::reset;
+        _windc_._rect_.moveat({a.x, off.y});
+    }
+    else
+    {
+        if(_anchor_ & anchor::fit_bottom)
+        {
+            _windc_._rect_.moveat({geometry().a.x, *area.height()-1-off.y});
+            book::out() << "fit bottom: " << color::yellow << id() << color::reset <<"::geometry(): " << color::hotpink4 << geometry() << color::reset;
+        }
+    }
+    // else
+    // {
+    //     if(_anchor_ & anchor::fit_center)
+    //     {
+    //         _windc_._rect_.moveat({(sz.w -_sz.w)/2, (sz.h -_sz.h)/2});
+    //         return book::code::accepted;
+    //     }
+    // }
+    // if(_anchor_ & anchor::fit_vcenter)
+    //     _windc_._rect_.moveat({_a.x,(sz.h -_sz.h)/2});
+    // else
+    // {
+    //     if(_anchor_ & anchor::fit_top)
+    //     {
+    //         if(((_uistyle_ & uistyle::Frame)&&(_anchor_ & anchor::onframe_fit)) || !(_uistyle_ & uistyle::Frame))
+    //             _windc_._rect_.moveat(cxy{a.x,0});
+    //         else
+    //             _windc_._rect_.moveat(cxy{a.x,1});
+    //     }
+    //     else
+    //     {
+    //         if(_anchor_ & anchor::fit_bottom)
+    //         {
+    //             book::out() << color::yellow << id() << " request fit to bottom of...("<< color::chartreuse6 << ar << color::reset << "):";
+    //             if(((_uistyle_ & uistyle::Frame)&&(_anchor_ & anchor::onframe_fit)) || !(_uistyle_ & uistyle::Frame))
+    //                 _windc_._rect_.moveat(cxy{a.x, ar.b.y});
+    //             else
+    //                 _windc_._rect_.moveat(cxy{a.x, ar.b.y});
+    //         }
+    //     }
+    // }
+    // if(_anchor_ & anchor::fit_hcenter)
+    //     _windc_._rect_.moveat({(sz.w - _sz.w)/2, _a.y});
+    // else
+    // {
+    //     book::out() << color::yellow << id() << color::reset << " not centered:";
+    //     if(_anchor_ & anchor::fit_right)
+    //     {
+    //         book::out() << color::yellow << id() << color::reset << " fit right:";
+    //         if(((_uistyle_ & uistyle::Frame)&&(_anchor_ & anchor::onframe_fit)) || !(_uistyle_ & uistyle::Frame))
+    //             _windc_._rect_.moveat(cxy{b.x - _sz.w, b.y});
+    //         else
+    //             _windc_._rect_.moveat(cxy{b.x -_sz.w-1, sz.h});
+    //         book::out() << geometry();
+    //     }
+    //     else
+    //         if(_anchor_ & anchor::fit_left)
+    //         {
+    //             if(((_uistyle_ & uistyle::Frame)&&(_anchor_ & anchor::onframe_fit)) || !(_uistyle_ & uistyle::Frame))
+    //                 _windc_._rect_.moveat(cxy{0, _a.y});
+    //             else
+    //                 _windc_._rect_.moveat(cxy{1, _a.y});
+    //         }
+    // }
     //...
-    book::out() << "applied geometry:" << color::yellow << id() << color::lime << geometry() << color::yellow;
+    book::out() << "applied geometry (fit_width|fit_height only as of Oct 08 '24):" << color::yellow << id() << color::lime << geometry() << color::yellow;
     return book::code::accepted;
 }
 
@@ -213,61 +262,6 @@ void element::draw_frame(painter &paint)
     paint.draw_frame();
 }
 
-book::code element::fit_width()
-{
-    using namespace globals;
-    book::debug() << book::fn::fun << color::yellow << id() << color::reset << "before resize: " << color::hotpink4 << geometry() << color::reset;
-    if(element* e = parent<element>(); e)
-    {
-        book::out() << "Call " << color::yellow << id() << color::lightskyblue4 << "::resize():";
-        resize({*e->geometry().width(), *_windc_._rect_.height()});
-        book::out() << color::yellow << id() << color::reset << " new geometry" << color::lime << geometry() << " : fit width on " << color::yellow << e->id() << color::cornflowerblue << e->geometry();
-    }
-    else
-    {
-        resize({*terminal::geometry().width(),*_windc_._rect_.height()});
-        book::debug() << color::yellow << id() << " fit width in (terminal)" << color::hotpink4 << terminal::geometry();
-    }
-    // if(!(_anchor_ & anchor::onframe_fit) && (_uistyle_ & uistyle::Frame))
-    // {
-    //     resize({geometry().dwh.w-2,*geometry().height()});
-    //     _windc_._rect_.a.x += 1;
-    // }
-
-    book::out() << color::yellow << id() << color::blueviolet << " stretched to fit in width: final width value:" << color::hotpink4 << *geometry().width();
-
-    return book::code::accepted;
-}
-
-book::code element::fit_height()
-{
-    return book::code::implemented;
-}
-
-book::code element::fit_to_right()
-{
-    return book::code::implemented;
-}
-
-book::code element::fit_to_left()
-{
-    return book::code::implemented;
-}
-
-book::code element::fit_to_hcenter()
-{
-    return book::code::implemented;
-}
-
-book::code element::fit_to_vcenter()
-{
-    return book::code::implemented;
-}
-
-book::code element::fit_to_center()
-{
-    return book::code::implemented;
-}
 
 
 book::code element::draw()
@@ -315,9 +309,9 @@ book::code element::resize(ui::size new_sz)
 
 book::code element::parent_resized()
 {
-    apply_placement();
+    emplace();
     for(auto *o: m_children)
-        if(element* e = o->as<element>(); e) e->apply_placement();
+        if(element* e = o->as<element>(); e) e->emplace();
     return book::code::done;
 }
 

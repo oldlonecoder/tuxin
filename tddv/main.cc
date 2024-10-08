@@ -102,7 +102,8 @@ book::code app::setup_ui()
     desk = new window{"Desktop Window",0};
     desk->set_theme("Default");
     desk->set_geometry({{1,1},terminal::geometry().dwh});
-    desk->set_anchor(globals::anchor::width_fit|globals::anchor::height_fit);
+    desk->set_anchor(0); //globals::anchor::width_fit|globals::anchor::height_fit);
+    desk->emplace();
     desk->redraw();
     auto painter = desk->begin_paint();
     painter.clear();

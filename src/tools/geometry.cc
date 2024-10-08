@@ -261,7 +261,7 @@ bool size::has_minmax() const
 
 rectangle::operator std::string() const
 {
-    return std::format("{},{} [{},{}-{},{}; {}x{}]", cursor.x, cursor.y, a.x, a.y, b.x,b.y, dwh.w, dwh.h);
+    return std::format("{},{} [{},{}:{},{}; {}x{}]", cursor.x, cursor.y, a.x, a.y, b.x,b.y, dwh.w, dwh.h);
 }
 
 std::string rectangle::tostring() const
