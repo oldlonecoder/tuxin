@@ -29,9 +29,8 @@ add_library(${BaseTarget} STATIC  #SHARED
             include/${BaseTarget}/tui/input_track.h src/tui/input_track.cc
             include/${BaseTarget}/tui/window.h src/tui/window.cc
             include/${BaseTarget}/tui/desktop.h src/tui/desktop.cc
-            include/${BaseTarget}/tui/ansi.h  src/tui/ansi.cc
+            include/${BaseTarget}/tui/ansi_to_chr.h  src/tui/ansi_to_chr.cc
             include/tuxin/tui/statusbar.h src/tui/statusbar.cc
-
 
             # include/${BaseTarget}/lexer/lexer_types.h cc/lexer/lexer_types.cc
             # include/${BaseTarget}/lexer/token_data.h cc/lexer/token_data.cc

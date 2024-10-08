@@ -1,14 +1,14 @@
-#include "tuxin/tui/ansi.h"
+#include "tuxin/tui/ansi_to_chr.h"
 
 namespace tuxin::ui
 {
 
-ansi::ansi()
+ansi_to_chr::ansi_to_chr()
 {
 
 }
 
-ansi::ansi(string data)
+ansi_to_chr::ansi_to_chr(string data)
 {
     _text_data_ = data;
     //...
@@ -25,7 +25,7 @@ ansi::ansi(string data)
  *          set twindc::width using longest twindc::chr::string
  *          set twindc::height using the number of lines value...
  */
-tuxin::ui::twindc tuxin::ui::ansi::render()
+tuxin::ui::twindc tuxin::ui::ansi_to_chr::render()
 {
     return {};
 }

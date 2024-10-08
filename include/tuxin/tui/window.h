@@ -23,11 +23,15 @@
 #include "tuxin/tui/globals.h"
 
 
-namespace tuxin::ui 
+namespace tuxin::ui
 {
 
-class TUXIN_API window : public element 
+class TUXIN_API window : public element
 {
+
+    globals::wflags::Type _class_{globals::wflags::TopLevel|globals::wflags::Floating};
+
+
 public:
     window():element(){}
     window(const std::string w_id,globals::uistyle::Type u_style);

@@ -88,6 +88,9 @@ static constexpr Type Caption   = 0x0002;
 static constexpr Type Input     = 0x0040;
 static constexpr Type MultiLine = 0x0080;
 static constexpr Type Glyph     = 0x0100;
+static constexpr Type statusbar = 0x0200;
+static constexpr Type hscroll   = 0x0400;
+static constexpr Type vscroll   = 0x0800;
 }
 /**
  * @brief Widget ui state enums or'ed flags
@@ -142,7 +145,7 @@ struct attr_db
     using themes = std::map<std::string_view,   attr_db::elements>;
     //using theme     = std::map<std::string_view, db::dictionary>;
     static colors::attr_db::themes s_data;
-    
+
     static attr_db::themes::iterator get_theme(std::string_view theme_name);
     static bool end(attr_db::themes::iterator it);
     //static attr_db::components& components_table(attr_db::themes::iterator i);

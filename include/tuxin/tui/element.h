@@ -124,7 +124,7 @@ public:
     virtual book::code redraw();
     virtual book::code resize(ui::size new_sz);
     virtual book::code parent_resized();
-
+    //virtual book::code move(cxy dxy);
 protected:
     virtual void dirty(element::painter& _painter);
     virtual book::code apply_placement();

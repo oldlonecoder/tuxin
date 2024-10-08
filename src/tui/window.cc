@@ -3,8 +3,9 @@
 
 #include "tuxin/tui/window.h"
 #include "tuxin/tui/globals.h"
+#include "tuxin/tui/statusbar.h"
 
-namespace tuxin::ui 
+namespace tuxin::ui
 {
 
 window::window(const std::string w_id,globals::uistyle::Type u_style) : element(nullptr, w_id)
@@ -21,6 +22,14 @@ window::~window()
 
 book::code window::setup_ui()
 {
+    if(_uistyle_ & globals::uistyle::statusbar)
+    {
+        statusbar* stb = new statusbar(this, id()+"|statusbar");
+        stb->set_theme(_theme_name_);
+        stb->set_anchor(globals::anchor::width_fit|globals::anchor::fit_bottom);
+        stb->setup_ui();
+    }
+
     return book::code::notimplemented;
 }
 

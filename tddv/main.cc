@@ -125,9 +125,10 @@ book::code app::setup_ui()
     painter << "input tracking here";
     intrack_ptr->end_paint(painter);
 
-    C64Win = new window{"C64 Window", globals::uistyle::Frame};
+    C64Win = new window{"C64 Window", globals::uistyle::Frame|globals::uistyle::statusbar};
     C64Win->set_theme("C64");
     C64Win->set_geometry({{2,2}, ui::size{88,28}});
+    C64Win->setup_ui();
     C64Win->draw();
     painter = C64Win->begin_paint();
     painter.to({5,3}) ;

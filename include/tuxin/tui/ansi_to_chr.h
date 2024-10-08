@@ -24,13 +24,13 @@
 namespace tuxin::ui
 {
 
-class TUXIN_API ansi
+class TUXIN_API ansi_to_chr
 {
     tuxin::string _text_data_{};
 public:
-    ansi();
-    ansi(tuxin::string data);
-    ~ansi();
+    ansi_to_chr();
+    ansi_to_chr(tuxin::string data);
+    ~ansi_to_chr();
 
     twindc render();
 
