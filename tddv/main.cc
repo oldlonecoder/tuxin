@@ -10,7 +10,7 @@
 #include "tuxin/tui/input_track.h"
 #include "tuxin/tui/application.h"
 #include "tuxin/tui/window.h"
-#include "tuxin/tui/statusbar.h"
+#include "tuxin/tui/desktop.h"
 #include <unistd.h>
 
 namespace tuxin::ui
@@ -19,8 +19,8 @@ class app : public application
 {
 
     intrack*        intrack_ptr{nullptr};
-    ui::statusbar*  statusbar{nullptr};
-    window*         desk{nullptr};
+    //ui::statusbar*  statusbar{nullptr};
+    desktop*         desk{nullptr};
     window*         C64Win{nullptr};
 public:
 
@@ -99,26 +99,24 @@ book::action app::terminal_resize_signal(rectangle _r) const
 
 book::code app::setup_ui()
 {
-    desk = new window{"Desktop Window",0};
+    desk = new desktop{"tuxin::ui Desktop"};
     desk->set_theme("Default");
-    desk->set_geometry({{1,1},terminal::geometry().dwh});
-    desk->set_anchor(0); //globals::anchor::width_fit|globals::anchor::height_fit);
-    desk->emplace();
-    desk->redraw();
+    desk->setup_ui();
+
     auto painter = desk->begin_paint();
     painter.clear();
-    painter.to({1,1}) << "[Desktop Window!]";
+    painter.to({1,1}) << desk->id();
     desk->end_paint(painter);
-    statusbar = new ui::statusbar(desk,"statusbar");
-    statusbar->set_theme("C64");
-    statusbar->setup_ui();
-    statusbar->draw();
-    // painter = statusbar->begin_paint();
+    // statusbar = new ui::statusbar(desk,"statusbar");
+    // statusbar->set_theme("C64");
+    // statusbar->setup_ui();
+    // statusbar->draw();
+    // // painter = statusbar->begin_paint();
     // painter.clear();
     // painter <<"[statusbar]";
     // statusbar->end_paint(painter);
 
-    intrack_ptr = new intrack{this->statusbar, "Mouse Track"};
+    intrack_ptr = new intrack{app::screen_desktop()->statusbar_element(), "Key&Mouse Track"};
     intrack_ptr->set_theme("C64");
     intrack_ptr->setup_ui();
     painter = intrack_ptr->begin_paint();

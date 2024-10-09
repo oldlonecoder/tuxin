@@ -15,9 +15,10 @@ book::code statusbar::setup_ui()
 {
     set_geometry({{0,0},ui::size{1,1}});
     emplace();
-    book::log() << book::fn::fun << color::yellow << " statusbar::" << id() << "'s geometry: " << geometry();
+    book::log() << book::fn::fun << " statusbar [" << color::yellow << id() << color::reset << "]'s geometry: " << geometry();
     return book::code::notimplemented;
 }
+
 
 // book::code statusbar::draw()
 // {

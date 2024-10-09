@@ -23,7 +23,7 @@
 #include "csignal"
 #include <memory>
 #include "tuxin/tools/cadres.h"
-
+#include "tuxin/tui/desktop.h"
 
 namespace tuxin::ui
 {
@@ -36,7 +36,7 @@ class TUXIN_API application
     static void sig_aborted(int);
     static void sig_crash(int);
     static void sig_winch(int);
-    
+
     std::vector<std::string_view> _args_{};
     std::string _app_name_{};
     static application* _app_;
@@ -45,19 +45,21 @@ public:
     application() = delete;
     virtual ~application();
     application(const std::string& app_name, int argc, char **argv);
-    
+
     virtual book::code run(){ return book::code::notimplemented;}
     virtual book::code terminate();
 
-    
+
     static application& app();
+    static desktop* screen_desktop();
+
 
 
 protected:
     virtual book::code setup();
     virtual book::code setup_ui(){ return book::code::reimplement; }
     virtual book::code install_signals();
-    
+
 
 };
 

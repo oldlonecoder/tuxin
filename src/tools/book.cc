@@ -31,6 +31,7 @@ std::mutex book_guard{};
 book::section::list book::sections{};
 book::section::list::iterator book::current_section{};
 
+namespace Fs = std::filesystem;
 
 
 bool operator !(book::code c)
@@ -526,7 +527,7 @@ void book::init_header()
         if(words.size() > 1)
         {
             auto i = words.end();
-            i--; // filename 
+            i--; // filename
             auto filename = *i;
             i--; // parent dir
             text | **i;
@@ -562,10 +563,10 @@ book &book::operator<<(char ch)
 void book::purge(const std::function<void(book &)>& f)
 {
     std::cout << " Purge book::sections->contents:\n\r";
-    for(auto& [id, contents]: book::sections)
+    for(auto& sec: book::sections)
     {
-        std::cout << " Section: [" << id << "]:\n\r--------------------------------------------------------\n\r";
-        for(auto& r : contents)
+        std::cout << " Section: [" << sec.id << "]:\n\r--------------------------------------------------------\n\r";
+        for(auto& r : sec.contents)
         {
             if (f)
                 f(r);
@@ -760,6 +761,6 @@ book &book::section::operator<<(book &&r)
 
 book &book::operator<<(book::action a_action)
 {
-    
+
     return *this;
 }

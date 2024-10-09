@@ -26,6 +26,8 @@
 
 #include <functional>
 #include "tuxin/tools/geometry.h"
+#include <filesystem>
+#include <fstream>
 
 
 
@@ -138,12 +140,12 @@ public:
     static std::pair<glyph::type, color::pair> TUXIN_API action_attributes       (book::action enum_action);
 
 
-    
 
 
 
-    
-    
+
+
+
 private:
     book::type _type_{};
     book::code _code_{};
@@ -153,6 +155,14 @@ private:
 
     header_component _headercomp_{1,0,1,1,1};
 public:
+
+
+    struct TUXIN_API logentry
+    {
+        tuxin::string _text_{};
+        using logs = std::vector<book::logentry>;
+    };
+
     static book& error       (std::source_location src = std::source_location::current());
     static book& warning     (std::source_location src = std::source_location::current());
     static book& fatal       (std::source_location src = std::source_location::current());
@@ -190,23 +200,23 @@ public:
         return *this;
     }
 
-private:
     static std::vector<book> _mem_stream_;
-
     void init_header();
-public:
     static void purge(const std::function<void(book &)>& f);
 
     struct TUXIN_API section
     {
-        std::string id;
-        std::vector<book> contents{};
+        std::string id;   ///< Section ID which is also the base name of the output file.
+        std::fstream* fout{nullptr}; ///< will see.
+        std::vector<book> contents{}; ///< Actual contents. Will be transfered into the entries container when the transition is done.
+        std::vector<book::logentry> entries{}; ///< in transition.
+
         using list = std::vector<book::section>;
-        book::section& operator *();
-        book& operator << (book&& r);
+        book::section& operator *(); ///< Get the reference of this instance.
+        book& operator << (book&& r); // move operator, will be removed and replaced with book::logentry object.
     };
 
-private:
+
     static book::section::list sections;
     static book::section::list::iterator current_section;
 public:

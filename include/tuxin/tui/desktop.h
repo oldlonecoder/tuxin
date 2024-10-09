@@ -22,6 +22,8 @@
 #include "tuxin/tui/window.h"
 #include "utility"
 #include "stack"
+#include "tuxin/tui/statusbar.h"
+
 #include <list> // statck(or z-ordered) of toplevel elements: std::list is for more efficient deletion/insertion in the midle of sequence
                 // pile (ou z-ordered) des éléments toplevel: j'utilise std::list pour une meilleur facilité à gérer les déplacements et les changements de valeur 'z'
 
@@ -35,8 +37,9 @@ class TUXIN_API desktop : public element
     twindc _back_{};
     //std::pair<twindc&,twindc&> winbuffers{_windc_,_back_}; ///< Trying double buffering because moving widgets/windows will flash during the redraws
     std::stack<rectangle> dirties{};
-    std::list<window*>   toplevels{};
-
+    std::list<window*>    toplevels{};
+    statusbar*            _status_bar_{nullptr};
+    static desktop*       _desk;
 public:
     desktop():element(){}
     desktop(const std::string& prog_id);
@@ -48,8 +51,11 @@ public:
     book::code redraw() override;
     book::code resize(ui::size new_sz) override;
 
+    static desktop* instance();
+    statusbar* statusbar_element();
 protected:
     //void      dirty(element::painter& _painter) override;
+private:
 
 };
 

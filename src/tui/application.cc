@@ -22,18 +22,18 @@ application::application(const std::string& a_id, int argc, char** argv): _app_n
 {
     if(argc && argv)
         tuxin::string::string_view_list(argc,argv);
-    
+
     if(application::_app_ == nullptr)
     {
         application::_app_ = this;
     }
-    else  
+    else
         abort();
 }
 
 
 application::~application()
-{   
+{
     //...
     _args_.clear();
     ///...
@@ -63,7 +63,7 @@ void application::sig_crash(int)
     book::segfault();
     //terminal::end();
     //book::purge(nullptr);
-    application::app().terminate(); 
+    application::app().terminate();
     exit(0);
 }
 
@@ -87,6 +87,11 @@ application& application::app()
         throw book::exception() [book::except() << book::fn::fun << book::fn::endl << " no instance of application!"];
 
     return *application::_app_;
+}
+
+desktop *application::screen_desktop()
+{
+    return desktop::instance();
 }
 
 book::code application::install_signals()

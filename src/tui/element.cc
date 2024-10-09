@@ -4,7 +4,7 @@
 
 #include "../../include/tuxin/tui/element.h"
 #include "tuxin/tui/globals.h"
-
+#include "tuxin/tui/desktop.h"
 //#include <memory>
 #include <utility>
 
@@ -134,25 +134,26 @@ void element::dirty(element::painter& _painter)
 book::code element::emplace()
 {
     using namespace globals;
-    book::debug() << book::fn::fun << '\'' << color::yellow << id() << color::reset << "\' :";
+    book::debug() << book::fn::fun << '\'' << color::yellow << id() << color::reset << "' :";
     cxy off{0,0};
 
     // need to separate and set a simple access to the rectangle coordinates and its components:
     auto par = parent<element>();
-    rectangle area; // The geometry where this element is positionning.
+    rectangle area; // The geometry on which this element is positionning.
     if(par)
-        area = parent<element>()->_windc_._rect_.tolocal();
+    {
+        if(par == desktop::instance())
+            area = terminal::geometry();
+        else
+            area = par->_windc_._rect_.tolocal();
+    }
     else
         area = terminal::geometry();
 
-    if((_anchor_ & anchor::onframe_fit))
-        off={0,0};
-    else
-    {
-        if(par)
-            if(par->_uistyle_ & uistyle::Frame)
-                off={1,1};
-    }
+    if(par)
+        if((par->_uistyle_ & uistyle::Frame) && !(par->_uistyle_ & anchor::onframe_fit))
+            off={1,1};
+
     book::out() << id() << " offset:" << off;
     //
     book::debug() << "placement is in this area :" << color::yellow << area << color::reset;
@@ -194,7 +195,8 @@ book::code element::emplace()
     {
         if(_anchor_ & anchor::fit_bottom)
         {
-            _windc_._rect_.moveat({geometry().a.x, *area.height()-1-off.y});
+
+            _windc_._rect_.moveat({geometry().a.x, *area.height()-off.y*2});
             book::out() << "fit bottom: " << color::yellow << id() << color::reset <<"::geometry(): " << color::hotpink4 << geometry() << color::reset;
         }
     }

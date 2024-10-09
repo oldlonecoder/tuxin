@@ -27,10 +27,10 @@ object::object(object *ParentObj, const std::string &ObjID):
 
 object::~object()
 {
-    for(auto* o : m_children) 
+    for(auto* o : m_children)
     {
-        book::info() << book::fn::fun << " destroy ['" << std::format("{:^20s}",o->id()) << "'] @" << o;
-        delete o; 
+        book::info() << book::fn::fun << " destroy ['" << std::format("{:^20s}", o->id()) << "'] @" << o;
+        delete o;
     }
     m_children.clear();
 }
@@ -61,7 +61,7 @@ object::iterator object::get_child_iterator(object *obj)
         if((*ot)->m_id == aid) return ot;
         ot++;
     }
-    
+
     std::cerr << color::render(color::white) << id() << " has no child identified by '"
               << color::render(color::yellow) << aid
               << color::render(color::white) << "'\n";
@@ -72,7 +72,11 @@ object::iterator object::get_child_iterator(object *obj)
 
 void object::append_child(object *o)
 {
-    if(get_child_iterator(o) != m_children.end()) return;
+    if(get_child_iterator(o) != m_children.end())
+    {
+        book::warning() << book::fn::fun << color::yellow << id() << color::reset << " already has child '" << color::yellow << o->id() << color::reset << "'";
+        return;
+    }
     m_children.push_back(o);
     o->m_parent = this;
 }
