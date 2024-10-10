@@ -161,6 +161,48 @@ public:
     {
         tuxin::string _text_{};
         using logs = std::vector<book::logentry>;
+        logentry(book::type, std::source_location src = std::source_location::current()){};
+        logentry();
+        ~logentry() { _text_.clear(); }
+
+        book::logentry& error       (std::source_location src = std::source_location::current());
+        book::logentry& warning     (std::source_location src = std::source_location::current());
+        book::logentry& fatal       (std::source_location src = std::source_location::current());
+        book::logentry& except      (std::source_location src = std::source_location::current());
+        book::logentry& message     (std::source_location src = std::source_location::current());
+        book::logentry& out         (std::source_location src = std::source_location::current());
+        book::logentry& debug       (std::source_location src = std::source_location::current());
+        book::logentry& info        (std::source_location src = std::source_location::current());
+        book::logentry& comment     (std::source_location src = std::source_location::current());
+        book::logentry& syntax      (std::source_location src = std::source_location::current());
+        book::logentry& status      (std::source_location src = std::source_location::current());
+        book::logentry& test        (std::source_location src = std::source_location::current());
+        book::logentry& interrupted (std::source_location src = std::source_location::current());
+        book::logentry& aborted     (std::source_location src = std::source_location::current());
+        book::logentry& segfault    (std::source_location src = std::source_location::current());
+        book::logentry& log         (std::source_location src = std::source_location::current());
+
+        book::logentry& operator << (const std::string& txt);
+        book::logentry& operator << (const char* txt);
+        book::logentry& operator << (char ch);
+        book::logentry& operator << (std::string_view txt);
+        book::logentry& operator << (const rectangle& r);
+        book::logentry& operator << (cxy pt);
+        book::logentry& operator << (color::code col);
+        book::logentry& operator << (color::pair fgbg);
+        book::logentry& operator << (glyph::type gh);
+        book::logentry& operator << (accent_fr::type ac);
+        book::logentry& operator << (book::type ty);
+        book::logentry& operator << (book::code cod);
+        book::logentry& operator << (book::fn fn);
+        book::logentry& operator << (book::action a_action);
+        template<typename T> book::logentry& operator << (const T& v)
+        {
+            _text_ << v;
+            return *this;
+        }
+        //...
+
     };
 
     static book& error       (std::source_location src = std::source_location::current());

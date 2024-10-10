@@ -25,14 +25,18 @@ book::code tuxin::ui::desktop::setup_ui()
 {
     set_geometry(terminal::geometry());
     _uistyle_ |= globals::uistyle::statusbar;
-    if(_uistyle_ & globals::uistyle::statusbar)
-    {
+    //if(_uistyle_ & globals::uistyle::statusbar)
+    //{
         statusbar* stb = new statusbar(this, id()+"|desktop::statusbar");
         stb->set_theme("C128");//_theme_name_);
         stb->set_anchor(globals::anchor::width_fit|globals::anchor::fit_bottom);
         stb->setup_ui();
         stb->emplace();
-    }
+        // auto p = stb->begin_paint();
+        // p.clear();
+        // p << "Appuyer sur ESC pour terminer.";
+        // stb->end_paint(p);
+    //}
 
     return book::code::done;
 }

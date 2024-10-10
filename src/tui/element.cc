@@ -163,6 +163,7 @@ book::code element::emplace()
 
     if(_anchor_ & anchor::width_fit)
     {
+        book::out() << " Resize this " << id() <<  " Geometry:" << color::blue4 << geometry();
         resize(ui::size{area.dwh.w - (off.x*2), *geometry().height()});
         _windc_._rect_.moveat({off.x,0});
         book::out() << "fit width: " << color::yellow << id() << color::reset <<"::geometry(): " << color::hotpink4 << geometry() << color::reset;

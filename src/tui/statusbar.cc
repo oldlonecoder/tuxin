@@ -14,7 +14,6 @@ statusbar::statusbar(element *_parent, const std::string &a_id): element(_parent
 book::code statusbar::setup_ui()
 {
     set_geometry({{0,0},ui::size{1,1}});
-    emplace();
     book::log() << book::fn::fun << " statusbar [" << color::yellow << id() << color::reset << "]'s geometry: " << geometry();
     return book::code::notimplemented;
 }
